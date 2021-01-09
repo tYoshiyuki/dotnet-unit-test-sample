@@ -2,7 +2,7 @@
 MsTest, NUnit, xUnit のテストケースサンプル
 
 ## Feature
-- .NET Core 3.1
+- .NET5
 - .NET Framework
 - MsTest
 - NUnit
