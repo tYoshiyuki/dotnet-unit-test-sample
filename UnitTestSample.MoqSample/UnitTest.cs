@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
 namespace UnitTestSample.MoqSample
@@ -12,6 +13,14 @@ namespace UnitTestSample.MoqSample
     }
 
     /// <summary>
+    /// テスト対象となるインターフェースです
+    /// </summary>
+    public interface ITestTargetV2
+    {
+        void DoSomething(string value1, string value2);
+    }
+
+    /// <summary>
     /// コールバック用のデリデートを定義します
     /// </summary>
     /// <param name="value1"></param>
@@ -22,7 +31,7 @@ namespace UnitTestSample.MoqSample
     public class UnitTest
     {
         [TestMethod]
-        public void TestMethod()
+        public void TestMethod01()
         {
             // Arrange
             var mock = new Mock<ITestTarget>();
@@ -38,6 +47,46 @@ namespace UnitTestSample.MoqSample
 
             // Assert
             Assert.AreEqual("This is output value.", input);
+        }
+
+        [TestMethod]
+        public void TestMethod02()
+        {
+            // Arrange
+            var mock = new Mock<ITestTargetV2>();
+
+            // モックの振る舞いを登録します
+            mock.Setup(_ => _.DoSomething(It.IsAny<string>(), It.IsAny<string>()));
+            var target = mock.Object;
+
+            // Act
+            target.DoSomething("This is input value1.", "This is input value2.");
+
+            // Assert
+            mock.Verify(_ => _.DoSomething(AssertValue1(), AssertValue2()));
+        }
+
+        /// <summary>
+        /// テスト結果検証用のメソッドです
+        /// </summary>
+        /// <returns></returns>
+        public string AssertValue1()
+        {
+            return Match.Create<string>(s => s == "This is input value1.");
+        }
+
+        /// <summary>
+        /// テスト結果検証用のメソッドです
+        /// </summary>
+        /// <returns></returns>
+        public string AssertValue2()
+        {
+            return Match.Create<string>(s =>
+            {
+                // 下記の通り、アサーションを独自に書くこともできます
+                Assert.AreEqual("This is input value2.", s);
+                return true;
+            });
         }
     }
 }
