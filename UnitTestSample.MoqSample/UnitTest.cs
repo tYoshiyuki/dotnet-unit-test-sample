@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -37,7 +38,7 @@ namespace UnitTestSample.MoqSample
             var mock = new Mock<ITestTarget>();
             // モックの振る舞いを登録します
             // ref参照の変数で値を変更します
-            mock.Setup(_ => _.DoSomething(It.IsAny<string>(), ref It.Ref<string>.IsAny))
+            mock.Setup(x => x.DoSomething(It.IsAny<string>(), ref It.Ref<string>.IsAny))
                 .Callback(new DoSomethingCallback((string value1, ref string value2) => value2 = "This is output value."));
             var target = mock.Object;
 
@@ -56,14 +57,15 @@ namespace UnitTestSample.MoqSample
             var mock = new Mock<ITestTargetV2>();
 
             // モックの振る舞いを登録します
-            mock.Setup(_ => _.DoSomething(It.IsAny<string>(), It.IsAny<string>()));
+            Expression<Action<ITestTargetV2>> doSomething = x => x.DoSomething(It.IsAny<string>(), It.IsAny<string>());
+            mock.Setup(doSomething);
             var target = mock.Object;
 
             // Act
             target.DoSomething("This is input value1.", "This is input value2.");
 
             // Assert
-            mock.Verify(_ => _.DoSomething(AssertValue1(), AssertValue2()));
+            mock.Verify(v => v.DoSomething(AssertValue1(), AssertValue2()));
         }
 
         /// <summary>
