@@ -2,7 +2,7 @@
 MsTest, NUnit, xUnit のテストケースサンプル
 
 ## Feature
-- .NET6
+- .NET8
 - .NET Framework
 - MsTest
 - NUnit
